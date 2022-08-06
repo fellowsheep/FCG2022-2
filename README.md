@@ -1,5 +1,5 @@
-# PG2022-2
-Alguns projetos desenvolvidos para as aulas de Processamento Gráfico dos cursos Ciência da Computação e Engenharia Biomédica da Unisinos.
+# Fundamentos de Computação Gráfica 2022-2
+Alguns projetos desenvolvidos para as aulas de Fundamentos de Computação Gráfica do curso de Jogos Digitais da Unisinos.
 
 As dependências estão pré-compiladas para Windows 10 32-bits e compilador do Visual Studio 2019/2022
 Se o seu ambiente de desenvolvimento for diferente, você deve baixar:
