@@ -19,34 +19,17 @@ using namespace std;
 // GLFW
 #include <GLFW/glfw3.h>
 
+#include "Shader.h"
+
 
 // Protótipo da função de callback de teclado
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 // Protótipos das funções
-int setupShader();
 int setupGeometry();
 
 // Dimensões da janela (pode ser alterado em tempo de execução)
 const GLuint WIDTH = 800, HEIGHT = 600;
-
-// Código fonte do Vertex Shader (em GLSL): ainda hardcoded
-const GLchar* vertexShaderSource = "#version 460\n"
-"layout (location = 0) in vec3 position;\n"
-"void main()\n"
-"{\n"
-//...pode ter mais linhas de código aqui!
-"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-"}\0";
-
-//Códifo fonte do Fragment Shader (em GLSL): ainda hardcoded
-const GLchar* fragmentShaderSource = "#version 460\n"
-"uniform vec4 inputColor;\n"
-"out vec4 color;\n"
-"void main()\n"
-"{\n"
-"color = inputColor;\n"
-"}\n\0";
 
 // Função MAIN
 int main()
@@ -94,7 +77,7 @@ int main()
 
 
 	// Compilando e buildando o programa de shader
-	GLuint shaderID = setupShader();
+	Shader shader("../shaders/hello_triangle.vs", "../shaders/hello_triangle.fs");
 
 	// Gerando um buffer simples, com a geometria de um triângulo
 	GLuint VAO = setupGeometry();
@@ -103,10 +86,9 @@ int main()
 	// Enviando a cor desejada (vec4) para o fragment shader
 	// Utilizamos a variáveis do tipo uniform em GLSL para armazenar esse tipo de info
 	// que não está nos buffers
-	GLint colorLoc = glGetUniformLocation(shaderID, "inputColor");
-	assert(colorLoc > -1);
 	
-	glUseProgram(shaderID);
+	
+	glUseProgram(shader.ID);
 	
 
 	// Loop da aplicação - "game loop"
@@ -126,13 +108,14 @@ int main()
 
 		// Chamada de desenho - drawcall
 		// Poligono Preenchido - GL_TRIANGLES
-		glUniform4f(colorLoc, 1.0f, 0.0f, 0.0f, 1.0f); //enviando cor para variável uniform inputColor		
+		shader.setVec4("inputColor", 1.0, 0.0, 0.0, 1.0);
+		///glUniform4f(colorLoc, 1.0f, 0.0f, 0.0f, 1.0f); //enviando cor para variável uniform inputColor		
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// Chamada de desenho - drawcall
 		// CONTORNO - GL_LINE_LOOP
 		// PONTOS - GL_POINTS
-		glUniform4f(colorLoc, 0.0f, 1.0f, 1.0f, 1.0f); //enviando cor para variável uniform inputColor
+		shader.setVec4("inputColor", 0.0, 1.0, 1.0, 1.0); //enviando cor para variável uniform inputColor
 		glDrawArrays(GL_LINE_LOOP, 0, 3);
 		
 		glBindVertexArray(0);
@@ -156,54 +139,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
-//Esta função está basntante hardcoded - objetivo é compilar e "buildar" um programa de
-// shader simples e único neste exemplo de código
-// O código fonte do vertex e fragment shader está nos arrays vertexShaderSource e
-// fragmentShader source no iniçio deste arquivo
-// A função retorna o identificador do programa de shader
-int setupShader()
-{
-	// Vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	// Checando erros de compilação (exibição via log no terminal)
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// Fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	// Checando erros de compilação (exibição via log no terminal)
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// Linkando os shaders e criando o identificador do programa de shader
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	// Checando por erros de linkagem
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	return shaderProgram;
-}
-
 // Esta função está bastante harcoded - objetivo é criar os buffers que armazenam a 
 // geometria de um triângulo
 // Apenas atributo coordenada nos vértices
@@ -218,7 +153,7 @@ int setupGeometry()
 	GLfloat vertices[] = {
 		-0.5, -0.5, 0.0, //v0
 		 0.5, -0.5, 0.0, //v1
-		 0.2, 0.7, 0.0,  //v2
+		 0.0, 0.5, 0.0,  //v2
 		 //outro triangulo vai aqui
 	};
 
