@@ -102,7 +102,7 @@ int main()
 	//Ex1)
 	//projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
 	//Ex2)
-	projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+	projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -1.0f, 1.0f);
 	shader.setMat4("projection", glm::value_ptr(projection));
 
 	// Loop da aplicação - "game loop"
@@ -124,8 +124,10 @@ int main()
 
 		//Definição da matriz de modelo (transf. na geometria)
 		glm::mat4 model = glm::mat4(1); //matriz identidade
-		model = glm::translate(model, glm::vec3(400.0f, 300.0f, 0.0f)); 
+		model = glm::translate(model, glm::vec3(400.0f, 300.0f, 0.0f));
+		model = glm::rotate(model, /*glm::radians(90.0f)*/(float) glfwGetTime(), glm::vec3(0, 0, 1));
 		model = glm::scale(model, glm::vec3(300.0f, 300.f, 1.0f));
+		
 
 		shader.setMat4("model", glm::value_ptr(model));
 
@@ -143,8 +145,9 @@ int main()
 		// PONTOS - GL_POINTS
 		shader.setVec4("inputColor", 0.0, 1.0, 1.0, 1.0); //enviando cor para variável uniform inputColor
 		glDrawArrays(GL_LINE_LOOP, 0, 3);
+		/////
 
-		
+				
 		glBindVertexArray(0); //"unbind do VAO" 
 
 		// Troca os buffers da tela

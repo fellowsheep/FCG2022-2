@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders">
+    <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{4f181e46-eb01-4f04-a519-bcb492936e3d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -27,10 +27,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\hello_triangle.fs">
-      <Filter>Shaders</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="..\shaders\hello_triangle.vs">
-      <Filter>Shaders</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
