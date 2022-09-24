@@ -131,7 +131,7 @@ int main()
 
 		//Definição da matriz de modelo (transf. na geometria)
 		glm::mat4 model = glm::mat4(1); //matriz identidade
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1, 0, 0));
 
 		shader.setMat4("model", glm::value_ptr(model));
 
