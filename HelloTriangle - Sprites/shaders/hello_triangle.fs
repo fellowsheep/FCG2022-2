@@ -8,9 +8,11 @@ in vec2 texCoord;
 
 uniform sampler2D texBuffer;
 
+uniform vec2 offsets;
+
 void main()
 {
 
-	color = texture(texBuffer,texCoord);//vertexColor;
+	color = texture(texBuffer,texCoord + offsets);//vertexColor;
 
 }

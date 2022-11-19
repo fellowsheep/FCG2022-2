@@ -38,6 +38,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // Protótipos das funções
 int setupGeometry();
 int setupSprite();
+int setupSprite(int nFrames, int nAnimations, float &dx, float &dy);
 int setupGeometry3D();
 
 GLuint generateTexture(string filePath);
@@ -95,12 +96,24 @@ int main()
 
 	// Gerando um buffer simples, com a geometria de um triângulo
 	GLuint VAO = setupSprite();
+
+	float dx, dy;
+	GLuint VAODino = setupSprite(5, 1, dx, dy);
+
+	//cout << dx << "  " << dy << endl;
 	
 	GLuint texID = generateTexture("../textures/desert-100.jpg");
 	GLuint texID2 = generateTexture("../textures/flaming_meteor.png");
-	GLuint texID3 = generateTexture("../textures/lava3.png");
-	GLuint texID4 = generateTexture("../textures/lava4.png");
+	GLuint texID3 = generateTexture("../textures/dinoanda.png");
+	GLuint texID4 = generateTexture("../textures/piterodatilo.png");
 	GLuint texID5 = generateTexture("../textures/lava5.png");
+
+	//Outros atributos do dino
+	glm::vec3 posDino;
+	posDino.x = 100;
+	posDino.y = 100;
+	int iFrame = 0;
+	int iAnimation = 0;
 
 	
 	//Ativa o shader que vai ser usado
@@ -160,6 +173,9 @@ int main()
 		model = glm::translate(model, glm::vec3(400, 300, 0));
 		model = glm::scale(model, glm::vec3(800.0f, 600.0f, 1.0f));
 		shader.setMat4("model", glm::value_ptr(model));
+		
+		shader.setVec2("offsets", 0, 0);
+		
 		//Chamada de desenho
 		glBindVertexArray(VAO); //conecta o buffer de geometria (VA0)
 		glBindTexture(GL_TEXTURE_2D, texID); //conecta a textura desejada
@@ -173,6 +189,7 @@ int main()
 		model = glm::translate(model, glm::vec3(xMeteoro, yMeteoro, 0));
 		model = glm::scale(model, glm::vec3(64.0f, 64.0f, 1.0f));
 		shader.setMat4("model", glm::value_ptr(model));
+		shader.setVec2("offsets", 0, 0);
 		//Chamada de desenho
 		glBindTexture(GL_TEXTURE_2D, texID2); //conecta a textura desejada
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -190,6 +207,40 @@ int main()
 
 		/////////////
 
+		//Desenho do sprite do dinossauro
+		//Atualiza a matriz de modelo (transform do objeto)
+		model = glm::mat4(1); //matriz identidade
+		model = glm::translate(model, glm::vec3(posDino.x, posDino.y, 0));
+		model = glm::scale(model, glm::vec3(120.0f, 72.0f, 1.0f));
+		shader.setMat4("model", glm::value_ptr(model));
+		
+		//Passar para o shader os deslocamentos na coord de textura
+		shader.setVec2("offsets", iFrame * dx, iAnimation * dy);
+		
+		//Chamada de desenho
+		glBindVertexArray(VAODino);
+		glBindTexture(GL_TEXTURE_2D, texID3); //conecta a textura desejada
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		//Desenho do sprite do pterossauro
+		//Atualiza a matriz de modelo (transform do objeto)
+		model = glm::mat4(1); //matriz identidade
+		model = glm::translate(model, glm::vec3(700, 500, 0));
+		model = glm::scale(model, glm::vec3(88.0f, 64.0f, 1.0f));
+		shader.setMat4("model", glm::value_ptr(model));
+
+		//Passar para o shader os deslocamentos na coord de textura
+		shader.setVec2("offsets", iFrame * dx, iAnimation * dy);
+
+		//Chamada de desenho
+		glBindVertexArray(VAODino);
+		glBindTexture(GL_TEXTURE_2D, texID4); //conecta a textura desejada
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		iFrame = (iFrame + 1) % 5; //incrementar o contador de Frames
+
+		
+		//cout << iFrame << endl;
 		
 
 		glBindVertexArray(0); //"unbind do VAO" 
@@ -302,6 +353,53 @@ int setupSprite()
 	// Se está normalizado (entre zero e um)
 	// Tamanho em bytes 
 	// Deslocamento a partir do byte zero 
+	//Atributo posição (x, y, z)
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	//Atributo cor (r, g, b)
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	//Atributo coordenada de textura (s,t)
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+	// Observe que isso é permitido, a chamada para glVertexAttribPointer registrou o VBO como o objeto de buffer de vértice 
+	// atualmente vinculado - para que depois possamos desvincular com segurança
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Desvincula o VAO (é uma boa prática desvincular qualquer buffer ou array para evitar bugs medonhos)
+	glBindVertexArray(0);
+	return VAO;
+}
+
+int setupSprite(int nFrames, int nAnimations, float &dx, float &dy)
+{
+	dx = 1.0f / (float) nFrames;
+	dy = 1.0f / (float) nAnimations;
+
+	GLfloat vertices[] = {
+		//Base da pirâmide: 2 triângulos
+		//x    y    z    r    g    b	s     t
+		-0.5, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0,
+		 0.5, -0.5, 0.0, 1.0, 0.0, 1.0, dx, 0.0,
+		-0.5,  0.5, 0.0, 0.0, 1.0, 1.0, 0.0, dy,
+
+
+		 0.5, -0.5, 0.0, 1.0, 0.0, 1.0, dx, 0.0,
+		 0.5,  0.5, 0.0, 0.0, 1.0, 1.0, dx, dy,
+		-0.5,  0.5, 0.0, 0.0, 1.0, 1.0, 0.0, dy,
+	};
+	GLuint VBO, VAO;
+	//Geração do identificador do VBO
+	glGenBuffers(1, &VBO);
+	//Faz a conexão (vincula) do buffer como um buffer de array
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//Envia os dados do array de floats para o buffer da OpenGl
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	//Geração do identificador do VAO (Vertex Array Object)
+	glGenVertexArrays(1, &VAO);
+	// Vincula (bind) o VAO primeiro, e em seguida  conecta e seta o(s) buffer(s) de vértices
+	// e os ponteiros para os atributos 
+	glBindVertexArray(VAO);
+
 	//Atributo posição (x, y, z)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
