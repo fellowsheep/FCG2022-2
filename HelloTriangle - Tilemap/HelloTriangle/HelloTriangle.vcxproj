@@ -118,6 +118,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\hello_triangle.fs" />
@@ -126,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Tilemap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

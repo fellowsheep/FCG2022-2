@@ -13,21 +13,21 @@
 
 using namespace std;
 
-// GLAD
-#include <glad/glad.h>
 
-// GLFW
-#include <GLFW/glfw3.h>
+//// GLFW
+//#include <GLFW/glfw3.h>
+//
+////GLM
+//#include <glm/glm.hpp> 
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+//
+//
+//#include "Shader.h"
+//
+//#include "stb_image.h"
 
-//GLM
-#include <glm/glm.hpp> 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
-#include "Shader.h"
-
-#include "stb_image.h"
+#include "Tilemap.h"
 
 //using namespace glm;
 
@@ -45,6 +45,10 @@ GLuint generateTexture(string filePath);
 
 // Dimensões da janela (pode ser alterado em tempo de execução)
 const GLuint WIDTH = 800, HEIGHT = 600;
+
+glm::vec3 posPersonagem; //em indice no mapa
+
+Tilemap tilemap;
 
 // Função MAIN
 int main()
@@ -66,7 +70,7 @@ int main()
 //#endif
 
 	// Criação da janela GLFW
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Ola Sprites!", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Ola Tilemap!", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Fazendo o registro da função de callback para a janela GLFW
@@ -94,6 +98,12 @@ int main()
 	// Compilando e buildando o programa de shader
 	Shader shader("../shaders/hello_triangle.vs", "../shaders/hello_triangle.fs");
 
+
+
+	tilemap.initialize("../maps/map2-regular.txt");
+	tilemap.setShader(&shader);
+
+
 	// Gerando um buffer simples, com a geometria de um triângulo
 	GLuint VAO = setupSprite();
 
@@ -101,17 +111,12 @@ int main()
 	GLuint VAODino = setupSprite(5, 1, dx, dy);
 
 	//cout << dx << "  " << dy << endl;
-	
-	GLuint texID = generateTexture("../textures/desert-100.jpg");
-	GLuint texID2 = generateTexture("../textures/flaming_meteor.png");
 	GLuint texID3 = generateTexture("../textures/dinoanda.png");
-	GLuint texID4 = generateTexture("../textures/piterodatilo.png");
-	GLuint texID5 = generateTexture("../textures/lava5.png");
-
+	
 	//Outros atributos do dino
-	glm::vec3 posDino;
-	posDino.x = 100;
-	posDino.y = 100;
+	
+	posPersonagem.x = 0;
+	posPersonagem.y = 0;
 	int iFrame = 0;
 	int iAnimation = 0;
 
@@ -125,7 +130,7 @@ int main()
 
 	//Matriz de projeção
 	glm::mat4 projection = glm::mat4(1); //matriz identidade
-	projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+	projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, 0.1f, 100.0f);
 	shader.setMat4("projection", glm::value_ptr(projection));
 
 	//Matriz de view
@@ -145,9 +150,6 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//variáveis de controle do meteoro
-	float xMeteoro = 400.0;
-	float yMeteoro = 850.0;
 
 	// Loop da aplicação - "game loop"
 	while (!glfwWindowShouldClose(window))
@@ -166,84 +168,13 @@ int main()
 		//Viewport 
 		glViewport(0, 0, width, height);
 
-		//Desenho do fundo
+		//chama a atualização do mapa
+		tilemap.update();
 
-		//Atualiza a matriz de modelo (transform do objeto)
-		glm::mat4 model = glm::mat4(1); //matriz identidade
-		model = glm::translate(model, glm::vec3(400, 300, 0));
-		model = glm::scale(model, glm::vec3(800.0f, 600.0f, 1.0f));
-		shader.setMat4("model", glm::value_ptr(model));
-		
-		shader.setVec2("offsets", 0, 0);
-		
-		//Chamada de desenho
-		glBindVertexArray(VAO); //conecta o buffer de geometria (VA0)
-		glBindTexture(GL_TEXTURE_2D, texID); //conecta a textura desejada
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//chama o desenho do mapa
+		tilemap.draw();
 
-		//-------------
 
-		//Desenho do sprite de meteoro
-		//Atualiza a matriz de modelo (transform do objeto)
-		model = glm::mat4(1); //matriz identidade
-		model = glm::translate(model, glm::vec3(xMeteoro, yMeteoro, 0));
-		model = glm::scale(model, glm::vec3(64.0f, 64.0f, 1.0f));
-		shader.setMat4("model", glm::value_ptr(model));
-		shader.setVec2("offsets", 0, 0);
-		//Chamada de desenho
-		glBindTexture(GL_TEXTURE_2D, texID2); //conecta a textura desejada
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		if (yMeteoro > 0.0)
-		{
-			yMeteoro -= 2.0;
-		}
-		else
-		{
-			//reseta a posição, mas sorteando um novo x
-			xMeteoro = 64 + rand() % 673; // 64 a 736
-			yMeteoro = 850;
-		}
-
-		/////////////
-
-		//Desenho do sprite do dinossauro
-		//Atualiza a matriz de modelo (transform do objeto)
-		model = glm::mat4(1); //matriz identidade
-		model = glm::translate(model, glm::vec3(posDino.x, posDino.y, 0));
-		model = glm::scale(model, glm::vec3(120.0f, 72.0f, 1.0f));
-		shader.setMat4("model", glm::value_ptr(model));
-		
-		//Passar para o shader os deslocamentos na coord de textura
-		shader.setVec2("offsets", iFrame * dx, iAnimation * dy);
-		
-		//Chamada de desenho
-		glBindVertexArray(VAODino);
-		glBindTexture(GL_TEXTURE_2D, texID3); //conecta a textura desejada
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		//Desenho do sprite do pterossauro
-		//Atualiza a matriz de modelo (transform do objeto)
-		model = glm::mat4(1); //matriz identidade
-		model = glm::translate(model, glm::vec3(700, 500, 0));
-		model = glm::scale(model, glm::vec3(88.0f, 64.0f, 1.0f));
-		shader.setMat4("model", glm::value_ptr(model));
-
-		//Passar para o shader os deslocamentos na coord de textura
-		shader.setVec2("offsets", iFrame * dx, iAnimation * dy);
-
-		//Chamada de desenho
-		glBindVertexArray(VAODino);
-		glBindTexture(GL_TEXTURE_2D, texID4); //conecta a textura desejada
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		iFrame = (iFrame + 1) % 5; //incrementar o contador de Frames
-
-		
-		//cout << iFrame << endl;
-		
-
-		glBindVertexArray(0); //"unbind do VAO" 
 
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
@@ -262,6 +193,44 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) //norte
+	{
+		if (posPersonagem.y > 0)
+		{
+			posPersonagem.y--;
+		}
+
+	}
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) //sul
+	{
+		if (posPersonagem.y < MAP_HEIGHT-1)
+		{
+			posPersonagem.y++;
+		}
+
+	}
+
+	if (key == GLFW_KEY_A && action == GLFW_PRESS) //oeste
+	{
+		if (posPersonagem.x > 0)
+		{
+			posPersonagem.x--;
+		}
+
+	}
+
+	if (key == GLFW_KEY_D && action == GLFW_PRESS) //leste
+	{
+		if (posPersonagem.x < MAP_WIDTH - 1)
+		{
+			posPersonagem.x++;
+		}
+
+	}
+	
+	tilemap.setCharacterPos(posPersonagem);
+
 }
 
 // Esta função está bastante harcoded - objetivo é criar os buffers que armazenam a 

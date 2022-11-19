@@ -1,10 +1,10 @@
 6
-areia.png
-grama.png
-floresta.png
-montanha.png
-aguarasa.png
-aguaprofunda.png
+../textures/tiles/areia.png
+../textures/tiles/grama.png
+../textures/tiles/terra.png
+../textures/tiles/lava.png
+../textures/tiles/aguarasa.png
+../textures/tiles/aguaprofunda.png
 7 7
 2	2	1	1	0	4	5
 2	2	2	1	0	4	5
