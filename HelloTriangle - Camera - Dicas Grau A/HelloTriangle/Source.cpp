@@ -192,11 +192,8 @@ int main()
 
 		//Desenhar a grid
 		desenharGrid();
-
-		//Desenhar o cursor
-		//,,,
 		
-		glBindVertexArray(0); //"unbind do VAO" 
+		
 
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
@@ -404,68 +401,61 @@ int setupVoxel()
 	// sequencial, já visando mandar para o VBO (Vertex Buffer Objects)
 	// Cada atributo do vértice (coordenada, cores, coordenadas de textura, normal, etc)
 	// Pode ser arazenado em um VBO único ou em VBOs separados
-		GLfloat vertices[] = {//EX 3-LISTA 2
+		GLfloat vertices[] = {
+			//Base do cubo: 2 triângulos
+		//x    y    z   
+		-0.5, -0.5, -0.5, 
+		-0.5, -0.5,  0.5,
+		 0.5, -0.5, -0.5, 
 
-		//////FRENTE ////////////////////-------------FRENTE
-		//1-metade quadrado   // R-G-B
-		-0.5f, 0.5f, 0.0f,      1.0, 1.0, 0.0,//B
-		  0.5f , -0.5f, 0.0f, 0.0, 1.0, 1.0,//C
-		 -0.5f, -0.5f, 0.0f,  1.0, 0.0, 1.0,//A
-		 //2-metade quadrado
-		 -0.5f, 0.5f, 0.0f,   1.0, 1.0, 0.0,//B
-		 0.5f, 0.5f, 0.0f,    0.0, 1.0, 1.0,//D
-		 0.5f, -0.5f, 0.0f,   1.0, 0.0, 1.0,//C
-		 /////////////////////////////////////
-		 //////TOPO ////////////////////---------------TOPO
-		 //1-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 1.0, 0.0,//2(B)
-		 0.5f, 0.5f, 0.0f,    0.0, 1.0, 1.0,//D
-		 -0.5f, 0.5f, 0.0f,   1.0, 0.0, 1.0,//B
-		 //2-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 1.0, 0.0,//2(B)
-		 0.5f, 0.5f, -0.5f,   0.0, 1.0, 1.0,//4(D)
-		 0.5f, 0.5f, 0.0f,    1.0, 0.0, 1.0,//D
-		 /////////////////////////////////////
-		 //////COSTAS ////////////////////----------COSTAS
-		 //1-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 1.0, 0.0,//2(B)
-		 0.5f, -0.5f, -0.5f,  1.0, 1.0, 0.0,//3(C)
-		 -0.5f, -0.5f, -0.5f, 1.0, 1.0, 1.0,//1(A)
-		 //2-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 1.0, 0.0,//2(B)
-		  0.5f, 0.5f, -0.5f,  1.0, 1.0, 0.0,//4(D)
-		  0.5f, -0.5f, -0.5f, 1.0, 1.0, 0.0,//3(C)
-		  /////////////////////////////////////
-		 //////ESQUERDA ////////////////////---------------ESQUERDA
-		 //1-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 0.0, 1.0,//2(B)
-		 -0.5f, -0.5f, -0.5f, 1.0, 0.0, 1.0,//1(A)
-		 -0.5f, -0.5f, 0.0f,  1.0, 0.0, 1.0,//A
-		 //2-METADE
-		 -0.5f, 0.5f, -0.5f,  1.0, 0.0, 1.0,//2(B)
-		 -0.5f, 0.5f, 0.0f,   1.0, 0.0, 1.0,//B
-		 -0.5f, -0.5f, 0.0f,  1.0, 0.0, 1.0,//A
-		 /////////////////////////////////////
-		 //////PISO-BASE ////////////////////------------BASE
-		 //1-METADE
-		 -0.5f, -0.5f, -0.5f, 1.0, 1.0, 0.0,//1(A)
-		 0.5f, -0.5f, 0.0f,   0.0, 1.0, 1.0,//C
-		 -0.5f, -0.5f, 0.0f,  1.0, 0.0, 1.0,//A
-		 //2-METADE TOPO
-		 -0.5f, -0.5f, -0.5f, 1.0, 1.0, 0.0,//1(A)
-		 0.5f, -0.5f, -0.5f,  0.0, 1.0, 1.0,//3(C)
-		 0.5f, -0.5f, 0.0f,   1.0, 0.0, 1.0,//C
-		 ////////////////////////////////////
-		 //////DIREITA ////////////////////---------------DIREITA
-		 //1-METADE
-		 0.5f, 0.5f, 0.0f,   0.0, 0.0, 1.0,//D
-		 0.5f, -0.5f, -0.5f, 0.0, 0.0, 1.0,//3(C)
-		 0.5f, -0.5f, 0.0f,  0.0, 0.0, 1.0,//C
-		 //2-METADE TOPO
-		 0.5f, 0.5f, 0.0f,   0.0, 0.0, 1.0,//D
-		 0.5f, 0.5f, -0.5f,  0.0, 0.0, 1.0,//4(D)
-		 0.5f, -0.5f, -0.5f, 0.0, 0.0, 1.0,//3(C)
+		 -0.5, -0.5, 0.5,  
+		  0.5, -0.5,  0.5, 
+		  0.5, -0.5, -0.5, 
 
+		  //Face de cima: 2 triângulos
+		  -0.5, 0.5,  0.5, 
+		   0.5, 0.5,  0.5, 
+		  -0.5, 0.5, -0.5, 
+
+		  0.5, 0.5,  0.5, 
+		  0.5, 0.5, -0.5, 
+		 -0.5, 0.5, -0.5, 
+
+		 //Face de frente: 2 triângulos
+		 -0.5, -0.5, -0.5, 
+		 -0.5,  0.5, -0.5,
+		  0.5, -0.5, -0.5, 
+
+		  0.5, -0.5, -0.5, 
+		 -0.5,  0.5, -0.5, 
+		  0.5,  0.5, -0.5, 
+
+		  //Face de trás: 2 triângulos
+		  -0.5,  0.5,  0.5, 
+		  -0.5, -0.5,  0.5, 
+		   0.5,  0.5,  0.5, 
+
+		   0.5,  0.5,  0.5, 
+		  -0.5, -0.5,  0.5, 
+		   0.5, -0.5,  0.5, 
+
+		   //Face da esquerda: 2 triângulos
+		  -0.5,  0.5, -0.5, 
+		  -0.5, -0.5, -0.5, 
+		  -0.5, -0.5,  0.5, 
+
+		  -0.5, -0.5,  0.5, 
+		  -0.5,  0.5,  0.5, 
+		  -0.5,  0.5, -0.5, 
+
+		  //Face da direita: 2 triângulos
+		   0.5,  0.5,  0.5, 
+		   0.5, -0.5,  0.5, 
+		   0.5, -0.5, -0.5, 
+
+		   0.5, -0.5, -0.5, 
+		   0.5,  0.5, -0.5, 
+		   0.5,  0.5,  0.5, 
 	};
 
 	GLuint VBO, VAO;
@@ -488,11 +478,9 @@ int setupVoxel()
 	// Tamanho em bytes 
 	// Deslocamento a partir do byte zero 
 	//Atributo posição (x, y, z)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	//Atributo cor (r, g, b)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
+	
 	// Observe que isso é permitido, a chamada para glVertexAttribPointer registrou o VBO como o objeto de buffer de vértice 
 	// atualmente vinculado - para que depois possamos desvincular com segurança
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -520,10 +508,12 @@ void desenharGrid()
 	//Conectar com o buffer de geometria do voxel
 	glBindVertexArray(VAO_Voxel);
 
-	float larguraVoxel = 1.0, alturaVoxel = 1.0, profundidadeVoxel = 0.5;
+	float larguraVoxel = 1.0, alturaVoxel = 1.0, profundidadeVoxel = 1.0;
 
 	for (int x = 0; x < MAX_X; x++)
-		for(int y = 0; y < MAX_Y; y++)
+	{
+		for (int y = 0; y < MAX_Y; y++)
+		{
 			for (int z = 0; z < MAX_Z; z++)
 			{
 				//Calcular os deslocamentos para aplicar a translação do voxel de acordo com os seus índices
@@ -555,17 +545,30 @@ void desenharGrid()
 				//desenhar preenchido
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 
-				shader.setVec4("inputColor", 0.0, 0.0, 0.0, 1.0); //cor do contorno 
-				glDrawArrays(GL_LINE_LOOP, 0, 36);
+				//shader.setVec4("inputColor", 0.0, 0.0, 0.0, 1.0); //cor do contorno 
+				//glDrawArrays(GL_LINE_LOOP, 0, 36);
 
 			}
+		}
+	}
 
-			//Desenhar o cursor:
+	//glBindVertexArray(0);
+	//glBindVertexArray(VAO_Voxel);
 
-			//ajustar a pos na matriz de modelo e passar pro shader
-			//mandar a cor do cursor pro shader
-			//mander desenhar
+	//Desenhar o cursor:
+	//ajustar a pos na matriz de modelo e passar pro shader
+	glm::mat4 model = glm::mat4(1);
+	model = glm::translate(model, glm::vec3(posVoxelCursor.x * larguraVoxel, posVoxelCursor.y * alturaVoxel, posVoxelCursor.z * profundidadeVoxel));
+	shader.setMat4("model", glm::value_ptr(model));
+	//mandar a cor do cursor pro shader
+	shader.setVec4("inputColor", 1.0f, 0.0f, 1.0f, 1.0f);
 
+	//mandar desenhar
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	
+	glBindVertexArray(0); //"unbind do VAO" 
+
+	
 }
 
 void adicionarVoxel()
